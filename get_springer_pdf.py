@@ -28,6 +28,7 @@ for (download_url, download_title) in zip(download_url_list, download_title_list
     title = title.replace('\\', '')
     print('DOWNLOADING...: ' + title, end='\r')
     # 一秒スリープ
+    time.sleep(1)
     r = requests.get(str(download_url))
     print('GET           : ' + title)
     # ファイルの保存
