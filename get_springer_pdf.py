@@ -1,6 +1,5 @@
 import pandas as pd
-import urllib3
-import requests, bs4
+import requests
 import time
 
 pd.set_option("display.max_colwidth", 100)
