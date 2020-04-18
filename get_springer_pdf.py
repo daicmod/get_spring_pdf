@@ -44,14 +44,20 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
     title = str(download_title)
     print(str(i) + '/' + str(len(df)) + ':\t:' + 'DOWNLOADING...: ' + title, end='\r')
     # 実際にファイルをダウンロードしてくる。
-    r = requests.get(str(download_url))
-    time.sleep(1)
-    print(str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
+    try:
+        r = requests.get(str(download_url),timeout = (6.0,15.0)) #timeout 2つめのパラメータがダウンロード開始からの時間[s]
+    except requests.exceptions.Timeout:
+        print('\t'+'== Timeout =='+\r')
+    except:
+        print('\t'+'== Any download error =='+'\r')
+    else:        
+        print(str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
+    
+        # ファイルの保存
+        if r.status_code == 200:
+            # カテゴリ分類ごとにファイルを格納する。
+            with open('./' + download_dir + '/' + title + '.pdf', "wb") as f: 
+                f.write(r.content)
+                f.close()
 
-    # ファイルの保存
-    if r.status_code == 200:
-        # カテゴリ分類ごとにファイルを格納する。
-        with open('./' + download_dir + '/' + title + '.pdf', "wb") as f: 
-            f.write(r.content)
-            f.close()
     i = i + 1
