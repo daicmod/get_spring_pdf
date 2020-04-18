@@ -40,16 +40,20 @@ for folder in download_dir_list:
 
 # 雑にダウンロード済みのファイル数をカウントする。
 i = 1
+# ダウンロードできなかったファイルのリストのインデックス
+download_failure_list = list()
 for (download_url, download_title, download_dir) in zip(download_url_list, download_title_list, download_dir_list):
     title = str(download_title)
     print(str(i) + '/' + str(len(df)) + ':\t:' + 'DOWNLOADING...: ' + title, end='\r')
     # 実際にファイルをダウンロードしてくる。
     try:
-        r = requests.get(str(download_url),timeout = (6.0,15.0)) #timeout 2つめのパラメータがダウンロード開始からの時間[s]
+        r = requests.get(str(download_url),timeout = (6.0,5.0)) #timeout 接続待機[s], 応答時間[s]
     except requests.exceptions.Timeout:
-        print('\t'+'== Timeout =='+\r')
+        print('\t'+'== Timeout =='+'\r')
+        download_failure_list.append(i)
     except:
         print('\t'+'== Any download error =='+'\r')
+        download_failure_list.append(i)
     else:        
         print(str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
     
@@ -61,3 +65,13 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
                 f.close()
 
     i = i + 1
+    
+    # for debug
+    if i == 5:
+        break
+print('\n'+'------------------------------ done -------------------------------'+'\n')
+
+if len(download_failure_list) > 0:
+    print('-- '+str(len(download_failure_list))+ ' files are failed. Please Download following titles yourself.--'+'\r')
+    for index in download_failure_list:
+        print(str(index)+'\t:'+ download_title_list[index-1] + '\tdir:' + download_dir_list[index-1] + '\tURL:' + download_url_list[index-1] )
