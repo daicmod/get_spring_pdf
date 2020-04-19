@@ -58,6 +58,7 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
     print(str(i) + '/' + str(len(df)) + ':\t:' + 'DOWNLOADING...: ' + title, end='\r')
     # 実際にファイルをダウンロードしてくる。
     try:
+        time.sleep(1)    # 連続でダウンロードし続けるのは申し訳ないのでスリープ
         r = requests.get(str(download_url),timeout = (6.0,5.0)) #timeout 接続待機[s], 応答時間[s]
     except requests.exceptions.Timeout:
         print('\t'+'== Timeout =='+'\r')
