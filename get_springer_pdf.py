@@ -2,7 +2,6 @@ import pandas as pd
 import requests
 import time
 import os
-import glob
 
 
 
@@ -49,8 +48,7 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
     title = str(download_title)
     
     # 既にダウンロード済みのファイルであれば飛ばす
-    downloaded_same_file_list = glob.glob('./' + download_dir + '/' + title + '.pdf')
-    if len(downloaded_same_file_list) > 0:
+    if os.path.isfile('./' + download_dir + '/' + title + '.pdf'):
         print(str(i) + '/' + str(len(df)) + ':\t:' + 'PASS       ...: ' + title)
         i = i + 1
         continue
