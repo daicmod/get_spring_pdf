@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import time
 import os
+import glob
 
 
 
@@ -37,13 +38,23 @@ for folder in download_dir_list:
         os.makedirs('./' + folder)
     except FileExistsError:
         pass
+    
 
 # 雑にダウンロード済みのファイル数をカウントする。
 i = 1
 # ダウンロードできなかったファイルのリストのインデックス
 download_failure_list = list()
+
 for (download_url, download_title, download_dir) in zip(download_url_list, download_title_list, download_dir_list):
     title = str(download_title)
+    
+    # 既にダウンロード済みのファイルであれば飛ばす
+    downloaded_same_file_list = glob.glob('./' + download_dir + '/' + title + '.pdf')
+    if len(downloaded_same_file_list) > 0:
+        print(str(i) + '/' + str(len(df)) + ':\t:' + 'PASS       ...: ' + title)
+        i = i + 1
+        continue
+    
     print(str(i) + '/' + str(len(df)) + ':\t:' + 'DOWNLOADING...: ' + title, end='\r')
     # 実際にファイルをダウンロードしてくる。
     try:
@@ -52,10 +63,10 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
         print('\t'+'== Timeout =='+'\r')
         download_failure_list.append(i)
     except:
-        print('\t'+'== Any download error =='+'\r')
+        print('\t'+'== Any error =='+'\r')
         download_failure_list.append(i)
     else:        
-        print(str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
+        print('\t' + str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
     
         # ファイルの保存
         if r.status_code == 200:
@@ -66,12 +77,10 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
 
     i = i + 1
     
-    # for debug
-    if i == 5:
-        break
-print('\n'+'------------------------------ done -------------------------------'+'\n')
+
+print('\n'+'---------------------------------- done ------------------------------------'+'\n')
 
 if len(download_failure_list) > 0:
-    print('-- '+str(len(download_failure_list))+ ' files are failed. Please Download following titles yourself.--'+'\r')
+    print('-- '+str(len(download_failure_list))+ ' files are failed. Please retry or download following titles yourself.--'+'\r')
     for index in download_failure_list:
         print(str(index)+'\t:'+ download_title_list[index-1] + '\tdir:' + download_dir_list[index-1] + '\tURL:' + download_url_list[index-1] )
