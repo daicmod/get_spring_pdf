@@ -68,11 +68,14 @@ for (download_url, download_title, download_dir) in zip(download_url_list, downl
         print('\t' + str(i) + '/' + str(len(df)) + ':\t:' + 'GET           : ' + title)
     
         # ファイルの保存
-        if r.status_code == 200:
+        if r.status_code == requests.codes.ok:
             # カテゴリ分類ごとにファイルを格納する。
             with open('./' + download_dir + '/' + title + '.pdf', "wb") as f: 
                 f.write(r.content)
                 f.close()
+        else:
+            print('\t'+'== Any error =='+'\r')
+            download_failure_list.append(i)
 
     i = i + 1
     
